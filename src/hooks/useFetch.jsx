@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import React from "react";
+import { useState, useEffect } from "react";
 
 export const useFetch = (url) => {
   const [data, setData] = useState(null);
@@ -8,19 +7,23 @@ export const useFetch = (url) => {
 
   useEffect(() => {
     const abortController = new AbortController();
-    const signal = abortController.signial;
+    const signal = abortController.signal;
 
     const fetchData = async () => {
       setLoading(true);
+
       try {
-        const res = await fetch(url);
+        const res = await fetch(url, { signal });
+
         if (!res.ok) {
-          let err = new Error("error en la peticion fetch");
+          let err = new Error("Error en la petición Fetch");
           err.status = res.status || "00";
-          err.statusText = res.statusText || "Ocurrio un error";
+          err.statusText = res.statusText || "Ocurrió un error";
           throw err;
         }
+
         const json = await res.json();
+
         if (!signal.aborted) {
           setData(json);
           setError(null);
@@ -38,6 +41,7 @@ export const useFetch = (url) => {
     };
 
     fetchData();
+
     return () => abortController.abort();
   }, [url]);
 
